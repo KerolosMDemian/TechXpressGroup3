@@ -17,7 +17,7 @@ namespace TechXpress.Controllers
         }
 
         // عرض جميع الطلبات لمستخدم معين
-        public async Task<IActionResult> Index(int userId)
+        public async Task<IActionResult> Index(string userId)
         {
             var orders = await _context.Orders
                 .Include(o => o.Items)
@@ -44,7 +44,7 @@ namespace TechXpress.Controllers
 
         // إنشاء طلب جديد
         [HttpPost]
-        public async Task<IActionResult> Create(int userId)
+        public async Task<IActionResult> Create(string userId)
         {
             var order = new Order(userId);
             _context.Orders.Add(order);

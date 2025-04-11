@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using TechXpress.Data.DbContext;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
+using TechXpress.Data.RepositoriesInterfaces;
+using TechXpress.Data.Entities;
 
 namespace TechXpress.Data.Repositories
 {
@@ -39,6 +42,7 @@ namespace TechXpress.Data.Repositories
         public void Update(T entity)
         {
             _dbSet.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(T entity)
@@ -50,5 +54,11 @@ namespace TechXpress.Data.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        {
+            return _dbSet.Where(predicate).ToList();
+        }
+
+       
     }
 }

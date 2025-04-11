@@ -4,9 +4,9 @@ using TechXpress.Data.ValueObjects;
 
 namespace TechXpress.Data.Entities
 {
-    public class User : IdentityUser<int>
+    public class User : IdentityUser
     {
-        public string Name { get; private set; } = string.Empty;
+        public string Name { get;  set; } = string.Empty;
         public Address Address { get; set; }
         public List<Order> Orders { get; private set; } = new List<Order>();
         public User()
@@ -18,7 +18,7 @@ namespace TechXpress.Data.Entities
             Name = name;
             Email = new EmailUser(email).ToString();
             UserName = email;
-            Address = new Address("", "", "", "", "");
+            Address = new Address("Street", "City", "State", "Country", "Zip Code");
         }
         public void UpdateAddress(Address newaddress) 
         { 

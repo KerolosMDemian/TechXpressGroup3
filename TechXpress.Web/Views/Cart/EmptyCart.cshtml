@@ -1,0 +1,17 @@
+﻿    @model TechXpress.Data.Entities.Cart
+
+    @{
+        ViewData["Title"] = "Shopping Cart";
+    }
+
+
+    <div class="text-center">
+        <div class="container mt-5 align-content-center">
+        <h4 class="align-content-center">Your Cart is Empty!</h4>
+            <h4 class="align-content-center">Please Add product to Cart!</h4>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary mt-3">Go To Products Page</a>
+        </div>
+    </div>
+
+
+

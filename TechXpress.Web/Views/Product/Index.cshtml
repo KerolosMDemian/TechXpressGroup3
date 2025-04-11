@@ -1,0 +1,98 @@
+﻿@model IEnumerable<TechXpress.Data.Entities.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if(User.IsInRole("Admin"))
+{
+
+
+<h2>Products</h2>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+           
+            <th>
+                Image
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImgUrl))
+                    {
+                        <img src="~/imgs/@item.ImgUrl" class="rounded img-fluid" width="60" height="60" />
+                    }
+
+
+                 </td>
+                <td>
+
+
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+}
+else{
+
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Our Products</h2>
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-12 col-sm-6 col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <a asp-action="Details" asp-route-id="@product.Id">
+                            <img src="~/imgs/@product.ImgUrl"
+                             class="card-img-top"
+                             alt="@product.Name"
+                             style="height: 250px; object-fit: cover;" />
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.Name</h5>
+                            @* <p class="card-text text-muted">@product.Category.Name</p> *@
+                            <p class="card-text">@product.Description</p>
+                            <h6 class="mt-auto text-primary">@product.Price.ToString("C")</h6>
+                            <h6 class="mt-auto text-success">In Stock: @product.StockQuantity</h6>
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-userId="@User.Identity.Name" asp-route-productId="@product.Id" class="btn btn-outline-primary mt-3">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+}

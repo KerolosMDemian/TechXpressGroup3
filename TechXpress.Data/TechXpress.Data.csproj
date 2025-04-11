@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="RepositoriesInterfaces\IRepository.cs~RF4832f8.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="UnitOfWork\" />
-    <Folder Include="RepositoriesInterfaces\" />
      </ItemGroup>
 
   <ItemGroup>

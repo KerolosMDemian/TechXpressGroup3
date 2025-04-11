@@ -1,0 +1,79 @@
+﻿@model TechXpress.Data.Entities.Category
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+@if (User.IsInRole("Admin"))
+{
+    <h1>Details</h1>
+<div>
+    <h4>Category</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Products In Category @Model.Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Products == null)
+            {
+                <tr>
+                    <td> <p>No Products Was Added</p></td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model.Products)
+                {
+                    <tr>
+                        <td><a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(m => item.Name)</a></td>
+                    </tr>
+
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
+    <a asp-action="Index" class="btn btn-dark">Back to List</a>
+</div>
+}
+else{
+    <div class="container ">
+        <h2 class="text-center mb-4">@Model.Name</h2>
+        <div class="row">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col-12 col-sm-6 col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                            <img src="~/imgs/@product.ImgUrl"
+                             class="card-img-top"
+                             alt="@product.Name"
+                             style="height: 250px; object-fit: cover;" />
+                             </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.Name</h5>
+                            @* <p class="card-text text-muted">@product.Category.Name</p> *@
+                            <p class="card-text">@product.Description</p>
+                            <h6 class="mt-auto text-primary">@product.Price.ToString("C")</h6>
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-userId="@User.Identity.Name" asp-route-productId="@product.Id" class="btn btn-outline-primary mt-3">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

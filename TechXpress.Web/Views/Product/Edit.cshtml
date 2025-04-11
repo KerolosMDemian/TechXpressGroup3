@@ -1,0 +1,100 @@
+﻿@model TechXpress.Web.Models.ProductViewModel  
+
+
+  <h2>Edit Product</h2>  
+
+  <div class="row">  
+      <div class="col-10">  
+          <form asp-action="Edit" enctype="multipart/form-data" method="post">  
+              <div asp-validation-summary="ModelOnly"></div>  
+              <input asp-for="Product.Id" hidden />  
+              <div class="row form-group p-2">  
+                  <div class="col-3">  
+                      <label asp-for="Product.Name"></label>  
+                  </div>  
+                  <div class="col-9">  
+                      <input asp-for="Product.Name" class="form-control" />  
+                      <span asp-validation-for="Product.Name" class="text-danger"></span>  
+                  </div>  
+              </div>  
+
+              <div class="row form-group p-2">  
+                  <div class="col-3">  
+                      <label asp-for="Product.Price"></label>  
+                  </div>  
+                  <div class="col-9">  
+                      <input asp-for="Product.Price" class="form-control" type="number" />  
+                      <span asp-validation-for="Product.Price" class="text-danger"></span>  
+                  </div>  
+              </div>  
+              <div class="row form-group p-2">  
+                  <div class="col-3">  
+                      <label asp-for="Product.StockQuantity"></label>  
+                  </div>  
+                  <div class="col-9">  
+                      <input asp-for="Product.StockQuantity" class="form-control" type="number" />  
+                      <span asp-validation-for="Product.StockQuantity" class="text-danger"></span>  
+                  </div>  
+              </div>  
+              <div class="row p-2">  
+                  <div class="col-3 form-group">  
+                      <label>Category</label>  
+                  </div>  
+                  <div class="col-9 form-group">  
+                      <select asp-for="Product.CategoryId" class="form-control" asp-items="ViewBag.Categories">  
+                          <option value="">-Select a category-</option>  
+                      </select>  
+                      <span asp-validation-for="Product.CategoryId" class="text-danger"></span>  
+                  </div>  
+              </div>  
+
+              <div class="row p-2">  
+                  <div class="col-3 form-group">  
+                      <label asp-for="Product.Description"></label>  
+                  </div>  
+                  <div class="col-9 form-group">  
+                      <textarea asp-for="Product.Description" class="form-control"></textarea>  
+                      <span asp-validation-for="Product.Description" class="text-danger"></span>  
+                  </div>  
+              </div>  
+
+              <div class="row form-group p-2">  
+                  <div class="col-12">  
+                      <input type="file" asp-for="Images" multiple class="form-control" />  
+                  </div>  
+              </div>  
+              @if (!string.IsNullOrEmpty(Model.Product.ImgUrl) && Model.Product.ImgUrl != "default-product.png")  
+              {  
+                  <div class="row p-2">  
+                      <div class="col-lg-3 col-md-6 col-sm-12">  
+                          <div class="card">  
+                              <img src="~/imgs/@Model.Product.ImgUrl" class="card-img-top" width="150" height="100" />  
+                            
+                            
+                          </div>  
+                      </div>  
+                  </div>  
+              }  
+
+           
+              <br />  
+              <div class="row form-group">  
+                  <div class="col-4 offset-1">  
+                      <a asp-action="Index" class="btn btn-secondary form-control"><strong>BackToList</strong></a>  
+                  </div>  
+                  <div class="col-6 offset-1">  
+                      <button type="submit" class="btn btn-success form-control">Edit</button>  
+                  </div>  
+              </div>  
+          </form>  
+      </div>  
+
+
+      @section Scripts {  
+          @{  
+              await Html.RenderPartialAsync("_ValidationScriptsPartial");  
+
+          }  
+          <script src="~/js/ProcessInImg.js"></script>  
+    }
+

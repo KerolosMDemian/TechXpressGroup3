@@ -1,52 +1,98 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using TechXpress.Data.DbContext;
 using TechXpress.Data.Entities;
+using TechXpress.Data.RepositoriesInterfaces;
 
 namespace TechXpress.Controllers
 {
+    
     public class CategoryController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IRepository<Category> _repository;
+        private readonly IProductRepository<Product> _productRepository;
 
-        public CategoryController(AppDbContext context)
+        public CategoryController(IRepository<Category> repository, IProductRepository<Product> productRepository)
         {
-            _context = context;
+            _repository = repository;
+            _productRepository = productRepository;
         }
 
-        // عرض كل الفئات
+        
         public async Task<IActionResult> Index()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _repository.GetAllAsync(); // Await the task to get the data
             return View(categories);
         }
-
-        // عرض تفاصيل الفئة ومنتجاتها
-        public async Task<IActionResult> Details(int id)
+        
+       
+       
+        public async Task<ActionResult> Details(int id)
         {
-            var category = await _context.Categories
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.Id == id);
+             var category = await _repository.GetByIdAsync(id);
 
-            if (category == null)
-                return NotFound();
-
+            if (category == null) return NotFound();
+            var products = _productRepository.GetAllProduct();
+            return View(category);
+        }
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                await _repository.AddAsync(category);  // انتظار العملية بشكل صحيح
+                await _repository.SaveAsync();         // انتظار عملية الحفظ
+                return RedirectToAction(nameof(Index)); // إعادة التوجيه إلى صفحة Index بعد الإضافة
+            }
             return View(category);
         }
 
-        // إضافة فئة جديدة
-        [HttpPost]
-        public async Task<IActionResult> Create(string name)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest("Category name cannot be empty.");
+            var category = await _repository.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, Category category)
+        {
+            if (id != category.Id) return BadRequest();
+            if (ModelState.IsValid)
+            {
+                _repository.Update(category);
+                await _repository.SaveAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
+        }
 
-            var category = new Category(name);
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index");
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await _repository.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var category = await _repository.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            _repository.Delete(category);
+            await _repository.SaveAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
