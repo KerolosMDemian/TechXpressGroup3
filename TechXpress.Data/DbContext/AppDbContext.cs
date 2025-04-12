@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TechXpress.Data.Entities;
 
+
 namespace TechXpress.Data.DbContext
 {
     public class AppDbContext : IdentityDbContext<User>
@@ -91,6 +92,6 @@ namespace TechXpress.Data.DbContext
             #endregion
         }
 
-
+       
     }
 }

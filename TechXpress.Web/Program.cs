@@ -5,7 +5,8 @@ using TechXpress.Data.Entities;
 using TechXpress.Data.Repositories;
 using TechXpress.Data.RepositoriesInterfaces;
 using System.Threading.Tasks;
-using TechXpress.Data.ValueObjects; // مهم جداً
+using TechXpress.Data.ValueObjects;
+using TechXpress.Data.UnitOfWork; // مهم جداً
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Services
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
