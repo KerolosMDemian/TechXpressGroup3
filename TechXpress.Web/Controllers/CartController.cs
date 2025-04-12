@@ -1,127 +1,128 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using TechXpress.Data.DbContext;
 using TechXpress.Data.Entities;
+using TechXpress.Data.RepositoriesInterfaces;
 
 namespace TechXpress.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class CartController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly ICartRepository _cartRepo;
+        private readonly IRepository<Product> _productRepo;
+        private readonly UserManager<User> _userManager;
 
-        public CartController(AppDbContext context)
+        public CartController(ICartRepository cartRepo, IRepository<Product> productRepo, UserManager<User> userManager)
         {
-            _context = context;
+            _cartRepo = cartRepo;
+            _productRepo = productRepo;
+            _userManager = userManager;
         }
 
-        // عرض السلة للمستخدم
-        public async Task<IActionResult> Index(string userId)
+        public async Task<IActionResult> Index()
         {
-           userId = User.Identity.Name;
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                    .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
+
+            var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
 
             if (cart == null || !cart.Items.Any())
-                return View("EmptyCart"); // عرض صفحة سلة فارغة
+                return View("EmptyCart");
 
             return View(cart);
         }
 
-        [Authorize(Roles = "Customer")]       
-        public async Task<IActionResult> AddToCart(string userId, int productId, int quantity)
+        public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
-            var cart = await _context.Carts.Include(c => c.Items)
-                                           .ThenInclude(ci => ci.Product)
-                                           .FirstOrDefaultAsync(c => c.UserId == userId);
+            if (quantity < 1)
+                quantity = 1;
 
-            // إذا كانت السلة غير موجودة للمستخدم، نقوم بإنشائها
-            if (cart == null)
-            {
-                cart = new Cart(userId);
-                _context.Carts.Add(cart);
-            }
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
 
-            // البحث عن المنتج
-            var product = await _context.Products.FindAsync(productId);
+            var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
+            var product = await _productRepo.GetByIdAsync(productId);
             if (product == null)
                 return NotFound("Product not found");
 
-            // إذا كان المنتج موجودًا في السلة، نقوم بتحديث الكمية
+            if (cart == null)
+            {
+                cart = new Cart(userId);
+                await _cartRepo.AddAsync(cart);
+            }
+
             var existingItem = cart.Items.FirstOrDefault(ci => ci.ProductId == productId);
             if (existingItem != null)
             {
-                existingItem.Quantity += quantity;  // تحديث الكمية إذا كان المنتج موجودًا بالفعل
+                existingItem.Quantity += quantity;
             }
             else
             {
-                // إضافة عنصر جديد إذا لم يكن موجودًا في السلة
                 var cartItem = new CartItem(productId, quantity);
                 cart.AddItem(cartItem);
             }
 
-            // حفظ التعديلات
-            await _context.SaveChangesAsync();
+            await _cartRepo.SaveAsync();
 
-            // إعادة توجيه المستخدم إلى صفحة السلة
-            return RedirectToAction("Index", new { userId });
+            return RedirectToAction("Index");
         }
 
-        // مسح محتويات السلة
-        public async Task<IActionResult> ClearCart(string userId)
-        {
-            var cart = await _context.Carts.Include(c => c.Items)
-                                           .FirstOrDefaultAsync(c => c.UserId == userId);
 
+        public async Task<IActionResult> ClearCart()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
+
+            var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
             if (cart != null)
             {
-                _context.CartItems.RemoveRange(cart.Items);  // إزالة كل العناصر من السلة
-                await _context.SaveChangesAsync();
+                cart.Items.Clear();
+                _cartRepo.Update(cart);
+                await _cartRepo.SaveAsync();
             }
 
-            return RedirectToAction("Index", new { userId });
+            return RedirectToAction("Index");
         }
 
-        // حذف عنصر من السلة
-        public async Task<IActionResult> RemoveItem(string userId, int productId)
+        public async Task<IActionResult> RemoveItem(int productId)
         {
-            var cart = await _context.Carts.Include(c => c.Items)
-                                           .FirstOrDefaultAsync(c => c.UserId == userId);
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
 
-            if (cart != null)
+            var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                var cartItem = cart.Items.FirstOrDefault(ci => ci.ProductId == productId);
-                if (cartItem != null)
-                {
-                    _context.CartItems.Remove(cartItem);  // إزالة العنصر من السلة
-                    await _context.SaveChangesAsync();
-                }
+                cart.Items.Remove(item);
+                _cartRepo.Update(cart);
+                await _cartRepo.SaveAsync();
             }
 
-            return RedirectToAction("Index", new { userId });
+            return RedirectToAction("Index");
         }
-        public async Task<IActionResult> UpdateQuantity(string userId, int productId, int quantity)
+
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
         {
-            var cart = await _context.Carts.Include(c => c.Items)
-                                           .ThenInclude(ci => ci.Product)
-                                           .FirstOrDefaultAsync(c => c.UserId == userId);
+            if (quantity < 1)
+                quantity = 1;
 
-            if (cart != null)
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
+
+            var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                var cartItem = cart.Items.FirstOrDefault(ci => ci.ProductId == productId);
-                if (cartItem != null)
-                {
-                    cartItem.Quantity = quantity;  // تحديث الكمية
-                    await _context.SaveChangesAsync();
-                }
+                item.Quantity = quantity;
+                _cartRepo.Update(cart);
+                await _cartRepo.SaveAsync();
             }
 
-            return RedirectToAction("Index", new { userId });
+            return RedirectToAction("Index");
         }
-
     }
 }

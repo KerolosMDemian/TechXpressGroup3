@@ -36,7 +36,8 @@
                         <td>@item.Product.Price $</td>
                         <td>
                             <form method="post" action="@Url.Action("UpdateQuantity", "Cart", new { userId = Model.UserId, productId = item.ProductId })">
-                                <input type="number" name="quantity" value="@item.Quantity" min="1" style="width: 60px;" />
+                                <input type="number" name="quantity" value="@item.Quantity" min="1" style="width: 60px;" required />
+
                                 <button type="submit" class="btn btn-primary btn-sm mt-2">Update</button>
                             </form>
                         </td>
@@ -49,12 +50,17 @@
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mt-4">
             <h3>Total: @Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</h3>
             <div>
-                <a href="@Url.Action("ClearCart", "Cart", new { userId = Model.UserId })" class="btn btn-warning">Clear Cart</a>
-                <a href="@Url.Action("Checkout", "Cart", new { userId = Model.UserId })" class="btn btn-success ml-3">Proceed to Checkout</a>
+                <a href="@Url.Action("ClearCart", "Cart", new { userId = Model.UserId })" class="btn btn-warning mr-2">Clear Cart</a>
+               
+                <form asp-controller="Order" asp-action="PlaceOrder" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success">Place Order (Cash on Delivery)</button>
+                </form>
             </div>
         </div>
+
     }
 </div>

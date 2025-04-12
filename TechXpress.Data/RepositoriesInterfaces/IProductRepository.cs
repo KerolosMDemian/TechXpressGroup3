@@ -8,7 +8,7 @@ namespace TechXpress.Data.RepositoriesInterfaces
 
     {
         IEnumerable<T> GetAllProduct();
-        T GetProductById(int id);
+         T GetProductById(int id);
         public Task Add(T entity);
         public void Update(T entity);
         public void Delete(T entity);

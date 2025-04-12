@@ -22,7 +22,6 @@ namespace TechXpress.Data.DbContext
         {
             base.OnModelCreating(modelBuilder);
 
-            // إعداد العلاقات في قاعدة البيانات
             #region Product
             modelBuilder.Entity<Product>()
                 .HasKey(p => p.Id);
@@ -34,27 +33,38 @@ namespace TechXpress.Data.DbContext
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
             #endregion
+
             #region Category
             modelBuilder.Entity<Category>()
                 .HasKey(p => p.Id);
             #endregion
-            #region Order&OrderItem
+
+            #region Order & OrderItem
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)
                 .WithMany(u => u.Orders)
                 .HasForeignKey(o => o.UserId);
 
+            // تحديد العلاقة بين OrderItem و Order باستخدام OrderId
             modelBuilder.Entity<OrderItem>()
-                .HasKey(oi => new { oi.ProductId, oi.Quantity });
+                .HasKey(oi => new { oi.OrderId, oi.ProductId }); // المفتاح المركب بين OrderId و ProductId
+
             modelBuilder.Entity<OrderItem>()
-               .HasOne(oi => oi.Product)
-                .WithMany()
-                .HasForeignKey(oi => oi.ProductId);
+                .HasOne(oi => oi.Order)  // العلاقة بين OrderItem و Order
+                .WithMany(o => o.Items)  // مع الـ Items في الـ Order
+                .HasForeignKey(oi => oi.OrderId)  // الربط بين OrderItem و Order بواسطة الـ OrderId
+                .OnDelete(DeleteBehavior.Cascade);  // حذف الـ OrderItem عند حذف الـ Order
+
+            // تحديد العلاقة بين OrderItem و Product
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Product)  // العلاقة بين OrderItem و Product
+                .WithMany()  // مع الـ Products بشكل عام
+                .HasForeignKey(oi => oi.ProductId);  // الربط بين OrderItem و Product بواسطة الـ ProductId
             #endregion
+
             #region CartItem
-            // إعداد العلاقات في CartItem
             modelBuilder.Entity<CartItem>()
-                .HasKey(ci => new { ci.CartId, ci.ProductId }); // مفتاح مركب
+                .HasKey(ci => new { ci.CartId, ci.ProductId }); // المفتاح المركب بين CartId و ProductId
 
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
@@ -66,6 +76,7 @@ namespace TechXpress.Data.DbContext
                 .WithMany()
                 .HasForeignKey(ci => ci.ProductId);
             #endregion
+
             #region User
             modelBuilder.Entity<User>()
                 .HasKey(u => u.Id);
@@ -75,7 +86,11 @@ namespace TechXpress.Data.DbContext
                 .HasKey(x => new { x.UserId, x.RoleId });
             modelBuilder.Entity<IdentityUserToken<int>>()
                 .HasKey(x => new { x.UserId, x.LoginProvider, x.Name });
+            modelBuilder.Entity<User>().OwnsOne(u => u.Address);
+
             #endregion
         }
+
+
     }
 }

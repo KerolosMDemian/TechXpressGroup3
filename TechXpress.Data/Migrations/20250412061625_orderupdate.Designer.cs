@@ -12,10 +12,8 @@ using TechXpress.Data.DbContext;
 namespace TechXpress.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250412003841_addisblock")]
-#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
-    partial class addisblock
-#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+    [Migration("20250412061625_orderupdate")]
+    partial class orderupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -286,18 +284,18 @@ namespace TechXpress.Data.Migrations
 
             modelBuilder.Entity("TechXpress.Data.Entities.OrderItem", b =>
                 {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
+                    b.HasKey("OrderId", "ProductId");
 
-                    b.HasKey("ProductId", "Quantity");
-
-                    b.HasIndex("OrderId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
                 });
@@ -513,15 +511,19 @@ namespace TechXpress.Data.Migrations
 
             modelBuilder.Entity("TechXpress.Data.Entities.OrderItem", b =>
                 {
-                    b.HasOne("TechXpress.Data.Entities.Order", null)
+                    b.HasOne("TechXpress.Data.Entities.Order", "Order")
                         .WithMany("Items")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TechXpress.Data.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("Product");
                 });

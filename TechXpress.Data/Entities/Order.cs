@@ -21,15 +21,21 @@ namespace TechXpress.Data.Entities
         }
     }
 
-    public class OrderItem
-    {
-        public int ProductId { get; private set; }
-        public int Quantity { get; private set; }
-        public Product Product { get; private set; } = null!;
-        public OrderItem(int productId, int quantity)
+   public class OrderItem
+   {
+    public int OrderId { get;  set; }  // إضافة OrderId
+    public int ProductId { get; private set; }
+    public int Quantity { get; private set; }
+    public Product Product { get; private set; } = null!;
+   public Order Order { get; private set; } = null!;  // خاصية الـ Navigation Property
+
+
+        public OrderItem(int orderId, int productId, int quantity)
         {
-            ProductId = productId;
-            Quantity = quantity;    
+        OrderId = orderId;  // ربط OrderItem بالـ Order
+        ProductId = productId;
+        Quantity = quantity;
         }
-    }
+   }
 }
+

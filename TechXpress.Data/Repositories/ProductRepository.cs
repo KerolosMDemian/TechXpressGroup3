@@ -27,7 +27,7 @@ namespace TechXpress.Data.Repositories
         public void Delete(T entity)
         {
              _dbSet.Remove(entity);
-            _context.SaveChanges(); // احفظ التغييرات بعد الحذف أو التحديث
+            _context.SaveChanges(); 
         }
 
         public IEnumerable<T> GetAllProduct()
@@ -35,7 +35,7 @@ namespace TechXpress.Data.Repositories
             return _dbSet.ToList();
         }
 
-        public T GetProductById(int id)
+        public  T GetProductById(int id)
         {
             var product = _dbSet.Find(id);
             if (product == null)
@@ -51,7 +51,7 @@ namespace TechXpress.Data.Repositories
         public void Update(T entity)
         {
             _dbSet.Update(entity);
-            _context.SaveChanges(); // احفظ التغييرات بعد التحديث
+            _context.SaveChanges(); 
         }
     }
 }

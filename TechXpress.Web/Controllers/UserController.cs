@@ -6,6 +6,7 @@ using TechXpress.Data.ValueObjects;
 using TechXpress.Web.Models;
 using TechXpress.Web.Controllers;
 using TechXpress.Data.RepositoriesInterfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TechXpress.Controllers
 {
@@ -22,7 +23,7 @@ namespace TechXpress.Controllers
             _userManager = userManager;
             _repository = repository;
         }
-
+        [Authorize(Roles ="Admin")]
         public async Task <IActionResult> Index()
         {
             var users = _repository.GetAll().ToList();

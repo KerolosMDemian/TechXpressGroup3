@@ -6,13 +6,13 @@
 @if(User.IsInRole("Admin")){
     <div class="container mt-0">
         <h2 class="text-center mb-4">Admin Dashboard</h2>
-        <div class="row mt-4">
+        <div class="row mt-4 text-center">
 
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3 p-3 rounded">
+            <div class="col-md-4 ">
+                <div class="card text-white bg-success-subtle mb-3 p-3 rounded">
                     <div class="card-header text-center">
                         <a asp-controller="User" asp-action="Index">
-                            <i class="fa-solid fa-user  fa-2xl" style="color: #f4f4f6;"></i>
+                            <i class="fa-solid fa-user  fa-2xl"></i>
                        
                         </a>
                        <div>Users</div>
@@ -24,10 +24,9 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card text-white bg-success mb-3 p-3 rounded">
+                <div class="card text-white bg-dark-subtle mb-3 p-3 rounded">
                     <div class="card-header text-center">
                         <a asp-controller="Product" asp-action="Index">
-                            @* <i class="fa-solid fa-user fa-2xl"></i> *@
                             <i class=" fa-solid fas fa-box fa-2xl"></i>
                         </a>
                         <div>Products</div>
@@ -39,7 +38,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card text-white bg-info mb-3 p-3 rounded">
+                <div class="card text-white bg-secondary  mb-3 p-3 rounded">
                     <div class="card-header text-center ">
                         <a asp-controller="Category" asp-action="Index">
                             <i class=" fa-solid fa-tags fa-2xl"></i>
@@ -48,6 +47,21 @@
                     </div>
                     <div class="card-body">
                         <h3>@ViewBag.CategoriesCount</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-dark mb-3 p-3 rounded">
+                    <div class="card-header text-center ">
+                        <a asp-controller="Order" asp-action="Index">
+                            <i class="fa fa-shopping-cart fa-2xl"></i>
+
+                        </a>
+                        <div>Orders</div>
+                    </div>
+                    <div class="card-body">
+                        <h3>@ViewBag.OrdersCount</h3>
+
                     </div>
                 </div>
             </div>
