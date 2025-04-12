@@ -1,12 +1,13 @@
 ﻿@model IEnumerable<TechXpress.Data.Entities.Category>
 
-@{
-    ViewData["Title"] = "IndexAdmin";
-}
 
 <h2>Categories</h2>
 @if (User.IsInRole("Admin"))
 {
+    
+    ViewData["Title"] = "IndexAdmin";
+
+
 
 
 <table class="table">

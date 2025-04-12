@@ -5,6 +5,7 @@ using TechXpress.Data.Entities;
 using TechXpress.Data.ValueObjects;
 using TechXpress.Web.Models;
 using TechXpress.Web.Controllers;
+using TechXpress.Data.RepositoriesInterfaces;
 
 namespace TechXpress.Controllers
 {
@@ -12,14 +13,35 @@ namespace TechXpress.Controllers
     {
        private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly IRepository<User> _repository;
 
        
-        public UserController(SignInManager<User> signInManager, UserManager<User> userManager)
+        public UserController(SignInManager<User> signInManager, UserManager<User> userManager, IRepository<User> repository)
         {
            _signInManager = signInManager;
             _userManager = userManager;
+            _repository = repository;
         }
 
+        public async Task <IActionResult> Index()
+        {
+            var users = _repository.GetAll().ToList();
+            var userRoles = new Dictionary<string, IList<string>>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles;
+            }
+
+            var model = new UserListViewModel
+            {
+                Users = users,
+                UserRoles = userRoles
+            };
+
+            return View(model);
+        }
         // عرض بيانات المستخدم
         public async Task<IActionResult> Details(int id)
         {
@@ -96,6 +118,14 @@ namespace TechXpress.Controllers
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && user.IsBlocked)
+                {
+                    ModelState.AddModelError("", "This account has been blocked. Please contact support.");
+                    return View(model);
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
@@ -129,5 +159,20 @@ namespace TechXpress.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
         }
+       
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleBlock(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return NotFound();
+
+            user.IsBlocked = !user.IsBlocked; // يبدل بين Block/Unblock
+            await _userManager.UpdateAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user);
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

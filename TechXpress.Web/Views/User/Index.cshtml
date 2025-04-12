@@ -1,0 +1,31 @@
+﻿@model TechXpress.Web.Models.UserListViewModel
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var user in Model.Users)
+        {
+            var roles = Model.UserRoles[user.Id];
+            bool isAdmin = roles.Contains("Admin");
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">@user.Name</h5>
+
+                       
+                        @if (!isAdmin)
+                        {
+                            <form asp-controller="User" asp-action="ToggleBlock" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn @(user.IsBlocked ? "btn-success" : "btn-danger") w-100">
+                                    @(user.IsBlocked ? "Unblock" : "Block")
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

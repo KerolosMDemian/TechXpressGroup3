@@ -9,6 +9,7 @@ namespace TechXpress.Data.Entities
         public string Name { get;  set; } = string.Empty;
         public Address Address { get; set; }
         public List<Order> Orders { get; private set; } = new List<Order>();
+        public bool IsBlocked { get; set; } = false;
         public User()
         {
             Address = null!;

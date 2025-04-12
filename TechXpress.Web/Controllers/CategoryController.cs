@@ -21,9 +21,9 @@ namespace TechXpress.Controllers
         }
 
         
-        public async Task<IActionResult> Index()
+        public  IActionResult Index()
         {
-            var categories = await _repository.GetAllAsync(); // Await the task to get the data
+            var categories =  _repository.GetAll(); // Await the task to get the data
             return View(categories);
         }
         

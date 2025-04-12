@@ -23,7 +23,10 @@ builder.Services.AddScoped(typeof(IProductRepository<>), typeof(ProductRepositor
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/User/Login";
@@ -65,7 +68,9 @@ async Task SeedAdminUserAsync(IHost app)
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     string adminEmail = "admin@techxpress.com";
-    string adminPassword = "Admin@123";
+    string adminPassword = "@dm1n&";
+    string adminName = "Admin";
+
 
     if (!await roleManager.RoleExistsAsync("Admin"))
         await roleManager.CreateAsync(new IdentityRole("Admin"));
@@ -78,6 +83,7 @@ async Task SeedAdminUserAsync(IHost app)
     {
         var user = new User
         {
+            Name = adminName,
             UserName = adminEmail,
             Email = adminEmail,
             EmailConfirmed = true,
