@@ -69,7 +69,8 @@
         </div>
     </div>
 }
-else{
+else
+{
     <div class="container mt-4">
         <h2 class="text-center mb-4">Welcome To Our Site</h2>
 
@@ -77,25 +78,29 @@ else{
         {
             <div class="category-container mb-5">
                 <h3 class="text-center">@category.Name</h3>
-                <div class="row">
+                <div class="row g-4">
                     @foreach (var product in category.Products)
                     {
-                        <div class="col-12 col-sm-6 col-md-4 mb-4">
+                        <div class="col-12 col-sm-6 col-md-4">
                             <div class="card h-100 shadow-sm">
                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
                                     <img src="~/imgs/@product.ImgUrl"
-                                     class="card-img-top"
-                                     alt="@product.Name"
-                                     style="height: 250px; object-fit: cover;" />
-                                     </a>
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">@product.Name</h5>
-                                    <p class="card-text">@product.Description</p>
+                                         class="card-img-top img-fluid"
+                                         alt="@product.Name"
+                                         style="height: 250px; object-fit: contain;" />
+                                </a>
+                                <div class="card-body d-flex flex-column text-center">
+                                    <h5 class="card-title text-break">@product.Name</h5>
+                                    <p class="card-text text-truncate">@product.Description</p>
                                     <h6 class="mt-auto text-primary">@product.Price.ToString("C")</h6>
                                     <h6 class="mt-auto text-success">In Stock: @product.StockQuantity</h6>
-                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-userId="@User.Identity.Name" asp-route-productId="@product.Id" class="btn btn-outline-primary mt-3">Add to Cart</a>
-
-
+                                    <a asp-controller="Cart"
+                                       asp-action="AddToCart"
+                                       asp-route-userId="@User.Identity.Name"
+                                       asp-route-productId="@product.Id"
+                                       class="btn btn-outline-primary mt-3">
+                                        Add to Cart
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -104,4 +109,6 @@ else{
             </div>
         }
     </div>
+
+
 }
