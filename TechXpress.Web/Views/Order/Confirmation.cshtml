@@ -13,7 +13,14 @@
             <p><strong>Order ID:</strong> @Model.Id</p>
             <p><strong>Date:</strong> @Model.OrderDate.ToString("f")</p>
             <p><strong>Total:</strong> @Model.Items.Sum(i => i.Product.Price * i.Quantity).ToString("C")</p>
-            <p><strong>Payment Method:</strong> Cash on Delivery</p>
+        @if (Model.PaymentMethod == TechXpress.Data.Enums.PaymentMethod.Stripe)
+        {
+            <p><strong>Payment Method:</strong>Strip</p>
+        }
+        else
+        {
+            <p><strong>Payment Method:</strong>Cash on Delevary</p>
+        }
              <p><strong>Delivery to Address:</strong> @Model.User.Address.Country - @Model.User.Address.State - @Model.User.Address.City - @Model.User.Address.Street </p>
             <hr />
             <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Back to Home</a>

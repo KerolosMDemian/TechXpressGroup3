@@ -47,15 +47,16 @@
                             <img src="~/imgs/@item.Product.ImgUrl" alt="@item.Product.Name" style="width: 50px; height: 50px; object-fit: cover;" />
                             @item.Product.Name
                         </td>
-                        <td>@item.Product.Price $</td>
+                        <td>@item.Product.Price EGP </td>
                         <td>
                             <form method="post" action="@Url.Action("UpdateQuantity", "Cart", new { userId = Model.UserId, productId = item.ProductId })">
-                                <input type="number" name="quantity" value="@item.Quantity" min="1" style="width: 60px;" required />
+                                <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" style="width: 60px;" required />
+
 
                                 <button type="submit" class="btn btn-primary btn-sm mt-2">Update</button>
                             </form>
                         </td>
-                        <td>@(item.Quantity * item.Product.Price) $</td>
+                        <td>@(item.Quantity * item.Product.Price) EGP</td>
                         <td>
                             <a href="@Url.Action("RemoveItem", "Cart", new { userId = Model.UserId, productId = item.ProductId })" class="btn btn-danger btn-sm">Remove</a>
                         </td>
@@ -68,10 +69,15 @@
             <h3>Total: @Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C")</h3>
             <div>
                 <a href="@Url.Action("ClearCart", "Cart", new { userId = Model.UserId })" class="btn btn-warning mr-2">Clear Cart</a>
-               
-                <form asp-controller="Order" asp-action="PlaceOrder" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-success">Place Order (Cash on Delivery)</button>
+
+                <form method="post" asp-controller="Order" asp-action="PlaceOrder">
+                    <label>Payment Method:</label>
+                    <select name="paymentMethod" class="form-select">
+                        <option value="1">Stripe</option>
+                        <option value="2">Cash on Delivery (COD)</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary mt-3">Place Order</button>
                 </form>
             </div>
         </div>

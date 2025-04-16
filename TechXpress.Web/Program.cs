@@ -6,11 +6,15 @@ using TechXpress.Data.Repositories;
 using TechXpress.Data.RepositoriesInterfaces;
 using System.Threading.Tasks;
 using TechXpress.Data.ValueObjects;
-using TechXpress.Data.UnitOfWork; // مهم جداً
-
+using TechXpress.Data.UnitOfWork;
+using TechXpress.Services.Services;
+using Stripe;
+using TechXpress.Services.Interfaces;
+using TechXpress.Services;
+using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddControllersWithViews();
 
 // Database connection
@@ -23,6 +27,9 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IProductRepository<>), typeof(ProductRepository<>));
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<IStripeService, StripeService>();
+
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -62,6 +69,14 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
+var cultureInfo = new System.Globalization.CultureInfo("en-EG");
+cultureInfo.NumberFormat.CurrencySymbol = "EGP";
+cultureInfo.NumberFormat.CurrencyPositivePattern = 1; // EGP n
+cultureInfo.NumberFormat.CurrencyNegativePattern = 1; // (EGP n)
+                                                   
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 
 app.Run();
 

@@ -115,14 +115,31 @@ namespace TechXpress.Controllers
 
             var cart = await _cartRepo.GetUserCartWithItemsAsync(userId);
             var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+
             if (item != null)
             {
+                var product = await _productRepo.GetByIdAsync(productId);
+                if (product == null)
+                {
+                    TempData["Error"] = "Product not found.";
+                    return RedirectToAction("Index");
+                }
+
+                if (quantity > product.StockQuantity)
+                {
+                    TempData["Error"] = $"Only {product.StockQuantity} items available in stock.";
+                    return RedirectToAction("Index");
+                }
+
                 item.Quantity = quantity;
                 _cartRepo.Update(cart);
                 await _cartRepo.SaveAsync();
+
+                TempData["Success"] = "Quantity updated successfully.";
             }
 
             return RedirectToAction("Index");
         }
+
     }
 }

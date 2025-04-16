@@ -15,6 +15,7 @@ namespace TechXpress.Data.UnitOfWork
         {
             _context = context;
         }
+        public AppDbContext Context => _context;
 
         public Task<int> SaveChangesAsync()
         {

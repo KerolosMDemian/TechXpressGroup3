@@ -9,6 +9,7 @@
 <p><strong>User:</strong> @Model.User.UserName</p>
 <p><strong>Date:</strong> @Model.OrderDate.ToString("f")</p>
 <p><strong>Total:</strong> @Model.Items.Sum(i => i.Quantity * i.Product.Price).ToString("C") </p>
+<p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
 
 <table class="table">
     <thead>
@@ -17,6 +18,7 @@
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Subtotal</th>
+            <th>Payment Stuts</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +29,7 @@
                 <td>@item.Quantity</td>
                 <td>@item.Product.Price.ToString("C")</td>
                 <td>@(item.Quantity * item.Product.Price)</td>
+                <td>@item.Order.OrderStatus</td>
             </tr>
         }
     </tbody>

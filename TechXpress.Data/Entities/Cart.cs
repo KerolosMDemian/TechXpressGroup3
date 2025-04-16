@@ -4,7 +4,7 @@ namespace TechXpress.Data.Entities
     public class Cart
     {
         public int Id { get; set; }
-        public string UserId { get; private set; }
+        public string UserId { get;  set; }
         public List<CartItem> Items { get; set; } = new();
         public Cart(string userId)
         {

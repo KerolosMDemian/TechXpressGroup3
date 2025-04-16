@@ -17,10 +17,10 @@
                 @Html.DisplayFor(model => model.Name)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model.Price.ToString("C"))
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Price)
+                @Html.DisplayFor(model => model.Price.ToString("C"))
             </dd>
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.StockQuantity)
@@ -70,7 +70,7 @@ else{
             @Html.DisplayNameFor(model => model.Price)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
+                @Model.Price.ToString("C")
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.StockQuantity)
